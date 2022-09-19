@@ -48,7 +48,7 @@ public class HookMain {
                 doHookItemDefault(patchClassLoader, hookItemName, originClassLoader);
             }
         } catch (Throwable e) {
-            Log.e("YAHFA.hookmain", Log.getStackTraceString(e));
+            Log.e(TAG, Log.getStackTraceString(e));
         }
     }
 

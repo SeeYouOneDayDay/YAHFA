@@ -39,6 +39,7 @@ public class HookAnnotation {
     @Target(ElementType.METHOD)
     public @interface StaticMethodHook {
         Class<?> targetClass();
+
         String methodName() default "";
     }
 
@@ -57,6 +58,7 @@ public class HookAnnotation {
     @Target(ElementType.METHOD)
     public @interface StaticMethodBackup {
         Class<?> targetClass();
+
         String methodName() default "";
     }
 
