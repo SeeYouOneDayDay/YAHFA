@@ -10,21 +10,46 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+        preDexLibraries false
+        maxProcessCount 8
+        javaMaxHeapSize "4g"
+    }
+    aaptOptions {
+        cruncherEnabled = false
+        useNewCruncher = false
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+        warningsAsErrors false
+        disable "UnusedResources"
+        textOutput "stdout"
+        textReport false
+        disable 'RestrictedApi'
+    }
 }
 
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+    options.encoding = "UTF-8"
+}
+
+// copy result to app
 assemble.doLast {
     android.applicationVariants.all { variant ->
-        println("============== variant.name: " + variant.name + "------->$rootDir" )
-
         if (String.valueOf(variant.name).equals("debug")) {
             variant.outputs.each { output ->
                 File originFile = output.outputFile
-                println("process file. path: " + originFile.absolutePath)
-                println("============== versionName: ${android.defaultConfig.versionName}")
                 copy {
                     from originFile
                     into "$rootDir/demoApp/src/main/assets/"
-//                    rename(originFile.name, "Fload-${variant.name}-${android.defaultConfig.versionName}.apk")
                 }
             }
         }
