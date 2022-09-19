@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         // ClassWithStaticMethod.tac() should be hooked
         Log.w(TAG, "static tac a,b,c,d, got " +
                 ClassWithStaticMethod.tac("a", "b", "c", "d"));
-        Log.w(TAG, "JNI method return string: " + ClassWithJNIMethod.fromJNI());
+//        Log.w(TAG, "JNI method return string: " + ClassWithJNIMethod.fromJNI());
 
         ClassWithCtor classWithCtor = new ClassWithCtor("param");
         Log.w(TAG, "class ctor and get field: " + classWithCtor.getField());

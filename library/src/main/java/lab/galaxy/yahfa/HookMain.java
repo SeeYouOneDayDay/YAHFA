@@ -1,5 +1,6 @@
 package lab.galaxy.yahfa;
 
+import android.os.Build;
 import android.util.Log;
 
 import java.lang.reflect.Constructor;
@@ -7,8 +8,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.lang.reflect.Member;
-import android.os.Build;
 
 /**
  * Created by liuruikai756 on 28/03/2017.
@@ -32,7 +31,7 @@ public class HookMain {
         int buildSdk = Build.VERSION.SDK_INT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
-                if(Build.VERSION.PREVIEW_SDK_INT > 0)
+                if (Build.VERSION.PREVIEW_SDK_INT > 0)
                     buildSdk += 1;
             } catch (Throwable e) {
                 // ignore
@@ -48,8 +47,8 @@ public class HookMain {
             for (String hookItemName : hookItemNames) {
                 doHookItemDefault(patchClassLoader, hookItemName, originClassLoader);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            Log.e("YAHFA.hookmain", Log.getStackTraceString(e));
         }
     }
 
@@ -87,7 +86,7 @@ public class HookMain {
 
             // has to visibly init the classes
             // see the comment for function Utils.initClass()
-            if(Utils.initClass() != 0) {
+            if (Utils.initClass() != 0) {
                 Log.e(TAG, "Utils.initClass failed");
             }
 
@@ -114,12 +113,12 @@ public class HookMain {
         if (target == null) {
             throw new IllegalArgumentException("null target method");
         }
-        
+
 //        if(target instanceof Member && Modifier.isStatic(((Member)target).getModifiers()) && isDebugModeEnabledR)
 //        {
 //            throw new IllegalArgumentException("Debug enabled.");
 //        }
-        
+
         if (hook == null) {
             throw new IllegalArgumentException("null hook method");
         }
@@ -138,7 +137,7 @@ public class HookMain {
 
         // has to visibly init the classes
         // see the comment for function Utils.initClass()
-        if(Utils.initClass() != 0) {
+        if (Utils.initClass() != 0) {
             Log.e(TAG, "Utils.initClass failed");
         }
 
@@ -217,17 +216,18 @@ public class HookMain {
         // so we have to call MakeInitializedClassesVisiblyInitialized explicitly before hooking
         public static int initClass() {
             // do nothing before Android R or on x86 devices
-            if(shouldVisiblyInit()) {
+            if (shouldVisiblyInit()) {
                 long thread = getThread();
                 return visiblyInit(thread);
-            }
-            else {
+            } else {
                 return 0;
             }
         }
 
         private static native boolean shouldVisiblyInit();
+
         private static native int visiblyInit(long thread);
+
         private static native long getThread();
     }
 }

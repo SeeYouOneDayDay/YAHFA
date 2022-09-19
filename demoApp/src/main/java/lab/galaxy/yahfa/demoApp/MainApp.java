@@ -2,7 +2,7 @@ package lab.galaxy.yahfa.demoApp;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 
@@ -23,13 +23,14 @@ public class MainApp extends Application {
         Build and put the demoPlugin apk in sdcard before running the demoApp
          */
             ClassLoader classLoader = getClassLoader();
-
             DexClassLoader dexClassLoader = new DexClassLoader(
-                    new File(Environment.getExternalStorageDirectory(), "demoPlugin-debug.apk").getAbsolutePath(),
+//                    new File(Environment.getExternalStorageDirectory(), "demoPlugin-debug.apk").getAbsolutePath(),
+                    new File("/sdcard/demoPlugin-debug.apk").getAbsolutePath(),
                     getCodeCacheDir().getAbsolutePath(), null, classLoader);
+            Log.d("YAHFA.app", "dexClassLoader:" + dexClassLoader);
             HookMain.doHookDefault(dexClassLoader, classLoader);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            Log.e("YAHFA.app", Log.getStackTraceString(e));
         }
     }
 }

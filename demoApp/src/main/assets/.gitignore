@@ -69,5 +69,6 @@ fireline*.jar
 firelineReport/
 */ProguardJson.java
 */Key.java
+*.apk
 
 

@@ -5,8 +5,29 @@ android {
     defaultConfig {
         applicationId "lab.galaxy.yahfa.demoPlugin"
         minSdkVersion 21
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+    }
+}
+
+assemble.doLast {
+    android.applicationVariants.all { variant ->
+        println("============== variant.name: " + variant.name + "------->$rootDir" )
+
+        if (String.valueOf(variant.name).equals("debug")) {
+            variant.outputs.each { output ->
+                File originFile = output.outputFile
+                println("process file. path: " + originFile.absolutePath)
+                println("============== versionName: ${android.defaultConfig.versionName}")
+                copy {
+                    from originFile
+                    into "$rootDir/demoApp/src/main/assets/"
+//                    rename(originFile.name, "Fload-${variant.name}-${android.defaultConfig.versionName}.apk")
+                }
+            }
+        }
+
     }
 }
