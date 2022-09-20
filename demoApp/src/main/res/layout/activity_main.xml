@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Button" />
+        android:text="点击测试" />
 
     <Button
         android:id="@+id/hookBtn"
@@ -18,5 +18,5 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/button"
         android:layout_marginTop="200dp"
-        android:text="Start Hook" />
+        android:text="点击替换方法-开始hook" />
 </RelativeLayout>

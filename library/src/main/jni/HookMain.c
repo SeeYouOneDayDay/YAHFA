@@ -37,10 +37,10 @@ void Java_lab_galaxy_yahfa_HookMain_init(JNIEnv *env, jclass clazz, jint sdkVers
             //OFFSET_dex_method_index_in_ArtMethod = 4*3;
             if (sdkVersion >= __ANDROID_API_S__)
                 OFFSET_entry_point_from_quick_compiled_code_in_ArtMethod =
-                    roundUpToPtrSize(4 * 3 + 2 * 2) + pointer_size;
+                        roundUpToPtrSize(4 * 3 + 2 * 2) + pointer_size;
             else
                 OFFSET_entry_point_from_quick_compiled_code_in_ArtMethod =
-                    roundUpToPtrSize(4 * 4 + 2 * 2) + pointer_size;
+                        roundUpToPtrSize(4 * 4 + 2 * 2) + pointer_size;
             break;
         case __ANDROID_API_O_MR1__:
             kAccCompileDontBother = 0x02000000;
@@ -114,12 +114,12 @@ static int replaceMethod(void *fromMethod, void *toMethod, int isBackup) {
 
     // replace entry point
     void *newEntrypoint = NULL;
-    if(isBackup) {
-        void *originEntrypoint = readAddr((char *) toMethod + OFFSET_entry_point_from_quick_compiled_code_in_ArtMethod);
+    if (isBackup) {
+        void *originEntrypoint = readAddr(
+                (char *) toMethod + OFFSET_entry_point_from_quick_compiled_code_in_ArtMethod);
         // entry point hardcoded
         newEntrypoint = genTrampoline(toMethod, originEntrypoint);
-    }
-    else {
+    } else {
         // entry point from ArtMethod struct
         newEntrypoint = genTrampoline(toMethod, NULL);
     }
@@ -130,20 +130,21 @@ static int replaceMethod(void *fromMethod, void *toMethod, int isBackup) {
     );
     if (newEntrypoint) {
         writeAddr((char *) fromMethod + OFFSET_entry_point_from_quick_compiled_code_in_ArtMethod,
-                newEntrypoint);
+                  newEntrypoint);
     } else {
         LOGE("failed to allocate space for trampoline of target method");
         return 1;
     }
 
     if (OFFSET_entry_point_from_interpreter_in_ArtMethod != 0) {
-        void *interpEntrypoint = readAddr((char *) toMethod + OFFSET_entry_point_from_interpreter_in_ArtMethod);
+        void *interpEntrypoint = readAddr(
+                (char *) toMethod + OFFSET_entry_point_from_interpreter_in_ArtMethod);
         writeAddr((char *) fromMethod + OFFSET_entry_point_from_interpreter_in_ArtMethod,
-                interpEntrypoint);
+                  interpEntrypoint);
     }
 
     // set the target method to native so that Android O wouldn't invoke it with interpreter
-    if(SDKVersion >= __ANDROID_API_O__) {
+    if (SDKVersion >= __ANDROID_API_O__) {
         uint32_t access_flags = getFlags(fromMethod);
         uint32_t old_flags = access_flags;
         if (SDKVersion >= __ANDROID_API_Q__) {
@@ -180,7 +181,7 @@ static int doBackupAndHook(void *targetMethod, void *hookMethod, void *backupMet
     if (SDKVersion >= __ANDROID_API_N__) {
         setNonCompilable(targetMethod);
 //        setNonCompilable(hookMethod);
-        if(backupMethod) setNonCompilable(backupMethod);
+        if (backupMethod) setNonCompilable(backupMethod);
     }
 
     if (backupMethod) {// do method backup
@@ -200,14 +201,13 @@ static int doBackupAndHook(void *targetMethod, void *hookMethod, void *backupMet
 static void *getArtMethod(JNIEnv *env, jobject jmethod) {
     void *artMethod = NULL;
 
-    if(jmethod == NULL) {
+    if (jmethod == NULL) {
         return artMethod;
     }
 
-    if(SDKVersion >= __ANDROID_API_R__) {
+    if (SDKVersion >= __ANDROID_API_R__) {
         artMethod = (void *) (*env)->GetLongField(env, jmethod, fieldArtMethod);
-    }
-    else {
+    } else {
         artMethod = (void *) (*env)->FromReflectedMethod(env, jmethod);
     }
 
@@ -248,14 +248,15 @@ jboolean Java_lab_galaxy_yahfa_HookMain_backupAndHookNative(JNIEnv *env, jclass 
                                                             jobject backup) {
 
 
-
     if (!doBackupAndHook(
             getArtMethod(env, target),
             getArtMethod(env, hook),
             getArtMethod(env, backup)
     )) {
-        (*env)->NewGlobalRef(env, hook); // keep a global ref so that the hook method would not be GCed
-        if(backup) (*env)->NewGlobalRef(env, backup);
+        // 防止GC
+        (*env)->NewGlobalRef(env,
+                             hook); // keep a global ref so that the hook method would not be GCed
+        if (backup) (*env)->NewGlobalRef(env, backup);
         return JNI_TRUE;
     } else {
         return JNI_FALSE;

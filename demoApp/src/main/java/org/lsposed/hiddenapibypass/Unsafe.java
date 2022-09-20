@@ -21,6 +21,8 @@ import android.os.Build;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import lab.galaxy.yahfa.YLog;
+
 //http://mishadoff.com/blog/java-magic-part-4-sun-dot-misc-dot-unsafe/
 //http://aospxref.com/android-7.1.2_r39/xref/libcore/ojluni/src/main/java/sun/misc/Unsafe.java
 //http://aospxref.com/android-8.1.0_r81/xref/libcore/ojluni/src/main/java/sun/misc/Unsafe.java
@@ -46,7 +48,7 @@ public final class Unsafe {
             theUnsafe.setAccessible(true);
             unsafe = theUnsafe.get(null);
         } catch (Throwable e) {
-            LL.e("Field [theUnsafe] get Unsafe Failed! ");
+            e(e);
         }
         if (unsafe == null) {
             try {
@@ -55,7 +57,7 @@ public final class Unsafe {
                 theUnsafe.setAccessible(true);
                 unsafe = theUnsafe.get(null);
             } catch (Throwable e2) {
-                LL.e("Field [THE_ONE] get Unsafe Failed! ");
+                e(e2);
             }
         }
         if (unsafe == null) {
@@ -65,7 +67,7 @@ public final class Unsafe {
                 getUnsafe.setAccessible(true);
                 unsafe = getUnsafe.invoke(null);
             } catch (Throwable e3) {
-                LL.e("Method [getUnsafe] get Unsafe Failed! ");
+                e(e3);
             }
         }
         if (unsafe == null) {
@@ -91,7 +93,7 @@ public final class Unsafe {
                 }
 
             } catch (Throwable e) {
-                LL.e("Filed [AbstractQueuedSynchronizer.U/unsafe] get Unsafe Failed! ");
+                e(e);
             }
         }
     }
@@ -106,10 +108,11 @@ public final class Unsafe {
             //所有版本均有接口：public long objectFieldOffset(Field field)
             return (long) unsafeClass.getDeclaredMethod("objectFieldOffset", Field.class).invoke(unsafe, field);
         } catch (Throwable e) {
-            LL.e(e);
+            e(e);
         }
         return 0;
     }
+
 
 
     public static long getLong(Object array, long offset) {
@@ -124,7 +127,7 @@ public final class Unsafe {
                 //public native long getLong(Object obj, long offset);
                 return (long) unsafeClass.getDeclaredMethod("getLong", Object.class, long.class).invoke(unsafe, array, offset);
             } catch (Throwable e1) {
-                LL.e(e1);
+                e(e1);
             }
         }
         return 0;
@@ -143,7 +146,7 @@ public final class Unsafe {
                 //public native void putLong(Object obj, long offset, long newValue);
                 unsafeClass.getDeclaredMethod("putLong", Object.class, long.class, long.class).invoke(unsafe, array, offset, value);
             } catch (Throwable e1) {
-                LL.e(e1);
+                e(e1);
             }
         }
     }
@@ -156,7 +159,7 @@ public final class Unsafe {
             //public native int getInt(long address);
             return (int) unsafeClass.getDeclaredMethod("getInt", long.class).invoke(unsafe, offset);
         } catch (Throwable e1) {
-            LL.e(e1);
+            e(e1);
         }
         return 0;
     }
@@ -174,7 +177,7 @@ public final class Unsafe {
                 // public native Object getObject(Object obj, long offset)
                 return unsafeClass.getDeclaredMethod("getObject", Object.class, long.class).invoke(unsafe, obj, offset);
             } catch (Throwable e1) {
-                LL.e(e1);
+                e(e1);
             }
         }
         return null;
@@ -193,9 +196,13 @@ public final class Unsafe {
                 // public native void putObject(Object obj, long offset, Object newValue);
                 unsafeClass.getDeclaredMethod("putObject", Object.class, long.class, Object.class).invoke(unsafe, obj, offset, newValue);
             } catch (Throwable e1) {
-                LL.e(e1);
+                e(e1);
             }
         }
+    }
+
+    private static void e(Throwable e) {
+        YLog.e(e);
     }
 
 

@@ -9,9 +9,10 @@ import android.widget.Button;
 import java.lang.reflect.Method;
 
 import lab.galaxy.yahfa.HookMain;
+import lab.galaxy.yahfa.YLog;
 
 public class MainActivity extends Activity {
-    private static final String TAG = "origin";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +26,11 @@ public class MainActivity extends Activity {
                     Method hook = Hook_Log_e.class.getDeclaredMethod("hook", String.class, String.class);
                     Method backup = Hook_Log_e.class.getDeclaredMethod("backup", String.class, String.class);
                     HookMain.findAndBackupAndHook(Log.class, Hook_Log_e.methodName, Hook_Log_e.methodSig, hook, backup);
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+
+                   int resu= Log.e("YAHFA","test in MainActivity");
+                   YLog.d("result:"+resu);
+                } catch (Throwable e) {
+                    YLog.e(TAG, e);
                 }
             }
         });
@@ -36,26 +40,26 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < 200; i++) {
-                    doWork();
+                    doWork(i);
                 }
             }
         });
     }
 
-    void doWork() {
-        // Log.e() should be hooked
-        Log.e(TAG, "call Log.e()");
-        // String.startsWith() should be hooked
-        Log.w(TAG, "foo startsWith f is " + "foo".startsWith("f"));
-        // ClassWithVirtualMethod.tac() should be hooked
-        Log.w(TAG, "virtual tac a,b,c,d, got " +
-                new ClassWithVirtualMethod().tac("a", "b", "c", "d"));
-        // ClassWithStaticMethod.tac() should be hooked
-        Log.w(TAG, "static tac a,b,c,d, got " +
-                ClassWithStaticMethod.tac("a", "b", "c", "d"));
-//        Log.w(TAG, "JNI method return string: " + ClassWithJNIMethod.fromJNI());
+    void doWork(int currentIndex) {
+        StringBuffer sb =new StringBuffer();
+        sb
+                .append("call Log.e():                ").append(Log.e("tt","xx"))
+                .append("\r\ncall Log.e() back:       ").append(Hook_Log_e.backup("tt","xx"))
+                // String.startsWith() should be hooked
+                .append("\r\nfoo startsWith f is:      ").append("foo".startsWith("f"))
+                // ClassWithVirtualMethod.tac() should be hooked
+                .append("\r\nvirtual tac a,b,c,d, got: ").append(new ClassWithVirtualMethod().tac("a", "b", "c", "d"))
+               //ClassWithStaticMethod.tac() should be hooked
+                .append("\r\nstatic tac a,b,c,d, got:  ").append(ClassWithStaticMethod.tac("a", "b", "c", "d"))
+                .append("\r\nclass ctor and get field: ").append(new ClassWithCtor("param").getField())
+        ;
 
-        ClassWithCtor classWithCtor = new ClassWithCtor("param");
-        Log.w(TAG, "class ctor and get field: " + classWithCtor.getField());
+        YLog.d(TAG, "===========["+currentIndex+"]=========\r\n" + sb.toString());
     }
 }

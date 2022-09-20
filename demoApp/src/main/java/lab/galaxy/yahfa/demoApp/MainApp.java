@@ -15,12 +15,14 @@ import java.io.InputStream;
 
 import dalvik.system.DexClassLoader;
 import lab.galaxy.yahfa.HookMain;
+import lab.galaxy.yahfa.YLog;
 
 /**
  * Created by liuruikai756 on 30/03/2017.
  */
 
 public class MainApp extends Application {
+    private static  final String TAG=MainApp.class.getSimpleName();
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -43,10 +45,10 @@ public class MainApp extends Application {
 //                    new File(Environment.getExternalStorageDirectory(), "demoPlugin-debug.apk").getAbsolutePath(),
                     getFileStreamPath(sourceName).getAbsolutePath(),
                     getCodeCacheDir().getAbsolutePath(), null, classLoader);
-            Log.d("YAHFA.app", "dexClassLoader:" + dexClassLoader);
+            YLog.d(TAG, "dexClassLoader:" + dexClassLoader);
             HookMain.doHookDefault(dexClassLoader, classLoader);
         } catch (Throwable e) {
-            Log.e("YAHFA.app", Log.getStackTraceString(e));
+            YLog.e(TAG, e);
         }
     }
 
@@ -65,7 +67,7 @@ public class MainApp extends Application {
             }
             fos.flush();
         } catch (Throwable e) {
-            Log.e("YAHFA.app", Log.getStackTraceString(e));
+            YLog.e(TAG, e);
         } finally {
             closeSilently(is);
             closeSilently(fos);
